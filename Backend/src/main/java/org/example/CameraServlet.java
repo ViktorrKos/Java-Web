@@ -6,36 +6,57 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
-// Цей шлях буде використовуватися для отримання даних
-@WebServlet("/api/cameras")
+@WebServlet(urlPatterns = {"/pot", "/api/cameras"})
 public class CameraServlet extends HttpServlet {
+    private static final Gson GSON = new Gson();
+
+    private final List<Camera> cameras = List.of(
+            new Camera(
+                    1,
+                    "Sony Alpha 7 IV",
+                    "/images/cameras/sony-alpha-7-iv.jpg",
+                    "Full-frame mirrorless camera for photo and video shooting.",
+                    "Sony",
+                    "Alpha 7 IV",
+                    33,
+                    "Full-frame CMOS",
+                    true,
+                    2499.99
+            ),
+            new Camera(
+                    2,
+                    "Canon EOS R5",
+                    "/images/cameras/canon-eos-r5.jpg",
+                    "Professional mirrorless camera with high-resolution photo mode.",
+                    "Canon",
+                    "EOS R5",
+                    45,
+                    "Full-frame CMOS",
+                    true,
+                    3899.00
+            ),
+            new Camera(
+                    3,
+                    "Nikon Z9",
+                    "/images/cameras/nikon-z9.jpg",
+                    "Flagship mirrorless camera for sports and studio work.",
+                    "Nikon",
+                    "Z9",
+                    45,
+                    "Full-frame stacked CMOS",
+                    true,
+                    5496.95
+            )
+    );
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Налаштовуємо відповідь, щоб вона повертала JSON
-        response.setContentType("application/json");
+        response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
-
-        // Вирішення проблеми з CORS для локального тестування (якщо Vue на іншому порту)
         response.setHeader("Access-Control-Allow-Origin", "*");
 
-        // Створюємо список камер
-        List<Camera> cameras = new ArrayList<>();
-        cameras.add(new Camera(1, "Alpha 7 IV", "Sony", 33, 2499.99));
-        cameras.add(new Camera(2, "EOS R5", "Canon", 45, 3899.00));
-        cameras.add(new Camera(3, "Z9", "Nikon", 45, 5496.95));
-
-        // Перетворюємо список у JSON за допомогою Gson
-        Gson gson = new Gson();
-        String json = gson.toJson(cameras);
-
-        // Відправляємо JSON клієнту
-        PrintWriter out = response.getWriter();
-        out.print(json);
-        out.flush();
+        response.getWriter().write(GSON.toJson(cameras));
     }
 }
