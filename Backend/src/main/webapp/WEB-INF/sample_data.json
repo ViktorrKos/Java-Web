@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Stainless Steel Pot",
+    "material": "Stainless steel",
+    "volumeLiters": 5.0,
+    "diameterCm": 24.0,
+    "inductionCompatible": true,
+    "price": 1899.0,
+    "description": "Universal pot with a glass lid for daily cooking."
+  },
+  {
+    "id": 2,
+    "name": "Enameled Soup Pot",
+    "material": "Enameled steel",
+    "volumeLiters": 3.5,
+    "diameterCm": 20.0,
+    "inductionCompatible": false,
+    "price": 1299.0,
+    "description": "Lightweight pot for soups, sauces, and side dishes."
+  },
+  {
+    "id": 3,
+    "name": "Cast Iron Casserole",
+    "material": "Cast iron",
+    "volumeLiters": 4.2,
+    "diameterCm": 22.0,
+    "inductionCompatible": true,
+    "price": 2499.0,
+    "description": "Heavy casserole pot for slow cooking and baking."
+  }
+]

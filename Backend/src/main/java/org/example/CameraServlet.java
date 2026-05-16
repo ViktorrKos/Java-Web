@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/pot", "/api/cameras"})
+@WebServlet("/api/cameras")
 public class CameraServlet extends HttpServlet {
     private static final Gson GSON = new Gson();
 
