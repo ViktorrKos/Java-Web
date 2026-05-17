@@ -4,26 +4,27 @@ import { onMounted, ref } from 'vue'
 const API_ENDPOINT = '/pot'
 const TEXT = {
   eyebrow: 'Lab 3 CRUD',
-  title: 'Каталог каструль',
-  description: 'Додавання, редагування та видалення записів через сервлет /pot.',
+  title: 'Каталог цифрових камер',
+  description: 'Додавання, редагування та видалення камер через сервлет /pot.',
   loadError: 'Не вдалося отримати дані з сервера. Перевірте backend і шлях /pot.',
   saveError: 'Не вдалося зберегти запис. Перевірте відповідь сервера.',
   deleteError: 'Не вдалося видалити запис. Перевірте, чи backend приймає id.',
   retry: 'Спробувати ще раз',
-  empty: 'Список каструль порожній.',
-  add: 'Додати',
-  update: 'Зберегти',
+  empty: 'Список камер порожній.',
+  add: 'Додати камеру',
+  update: 'Зберегти зміни',
   cancel: 'Скасувати',
   edit: 'Редагувати',
   delete: 'Видалити',
-  name: 'Назва',
-  material: 'Матеріал',
-  volume: "Об'єм, л",
-  price: 'Ціна',
+  brand: 'Бренд',
+  model: 'Модель',
+  megapixels: 'Мегапікселі (MP)',
+  price: 'Ціна ($)',
+  descriptionLabel: 'Опис',
   actions: 'Дії'
 }
 
-const pots = ref([])
+const cameras = ref([])
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
@@ -33,37 +34,39 @@ const form = ref(createEmptyForm())
 
 function createEmptyForm() {
   return {
-    name: '',
-    material: '',
-    volume: '',
-    price: ''
+    brand: '',
+    model: '',
+    megapixels: '',
+    price: '',
+    description: ''
   }
 }
 
 function toNumber(value) {
   const normalized = String(value).replace(',', '.')
   const number = Number(normalized)
-
   return Number.isFinite(number) ? number : 0
 }
 
-function normalizePot(pot) {
+function normalizeCamera(cam) {
   return {
-    id: pot.id,
-    name: pot.name ?? pot.title ?? pot.model ?? '',
-    material: pot.material ?? pot.brand ?? '',
-    volume: pot.volume ?? pot.capacity ?? '',
-    price: pot.price ?? ''
+    id: cam.id,
+    brand: cam.brand ?? '',
+    model: cam.model ?? '',
+    megapixels: cam.megapixels ?? '',
+    price: cam.price ?? '',
+    description: cam.description ?? ''
   }
 }
 
 function buildPayload() {
   return {
     ...(editingId.value !== null ? { id: editingId.value } : {}),
-    name: form.value.name.trim(),
-    material: form.value.material.trim(),
-    volume: toNumber(form.value.volume),
-    price: toNumber(form.value.price)
+    brand: form.value.brand.trim(),
+    model: form.value.model.trim(),
+    megapixels: parseInt(form.value.megapixels) || 0,
+    price: toNumber(form.value.price),
+    description: form.value.description.trim()
   }
 }
 
@@ -73,19 +76,20 @@ function resetForm() {
   formError.value = ''
 }
 
-function editPot(pot) {
-  const normalized = normalizePot(pot)
+function editCamera(cam) {
+  const normalized = normalizeCamera(cam)
   editingId.value = normalized.id
   form.value = {
-    name: normalized.name,
-    material: normalized.material,
-    volume: normalized.volume,
-    price: normalized.price
+    brand: normalized.brand,
+    model: normalized.model,
+    megapixels: normalized.megapixels,
+    price: normalized.price,
+    description: normalized.description
   }
   formError.value = ''
 }
 
-function getPotUrl(id) {
+function getCameraUrl(id) {
   return `${API_ENDPOINT}?id=${encodeURIComponent(id)}`
 }
 
@@ -105,7 +109,7 @@ async function requestJson(url, options = {}) {
   return response
 }
 
-async function loadPots() {
+async function loadCameras() {
   loading.value = true
   error.value = ''
 
@@ -117,20 +121,20 @@ async function loadPots() {
     }
 
     const data = await response.json()
-    pots.value = Array.isArray(data) ? data.map(normalizePot) : []
+    cameras.value = Array.isArray(data) ? data.map(normalizeCamera) : []
   } catch (err) {
     error.value = TEXT.loadError
-    console.error('Pot loading failed:', err)
+    console.error('Camera loading failed:', err)
   } finally {
     loading.value = false
   }
 }
 
-async function savePot() {
+async function saveCamera() {
   formError.value = ''
 
-  if (!form.value.name.trim() || !form.value.material.trim()) {
-    formError.value = 'Заповніть назву та матеріал.'
+  if (!form.value.brand.trim() || !form.value.model.trim()) {
+    formError.value = 'Заповніть бренд та модель.'
     return
   }
 
@@ -140,23 +144,23 @@ async function savePot() {
     const payload = buildPayload()
     const isEditing = editingId.value !== null
 
-    await requestJson(isEditing ? getPotUrl(editingId.value) : API_ENDPOINT, {
+    await requestJson(isEditing ? getCameraUrl(editingId.value) : API_ENDPOINT, {
       method: isEditing ? 'PUT' : 'POST',
       body: JSON.stringify(payload)
     })
 
     resetForm()
-    await loadPots()
+    await loadCameras()
   } catch (err) {
     formError.value = TEXT.saveError
-    console.error('Pot saving failed:', err)
+    console.error('Camera saving failed:', err)
   } finally {
     saving.value = false
   }
 }
 
-async function deletePot(pot) {
-  const id = pot.id
+async function deleteCamera(cam) {
+  const id = cam.id
 
   if (id === undefined || id === null) {
     error.value = TEXT.deleteError
@@ -164,20 +168,20 @@ async function deletePot(pot) {
   }
 
   try {
-    await requestJson(getPotUrl(id), { method: 'DELETE' })
+    await requestJson(getCameraUrl(id), { method: 'DELETE' })
 
     if (editingId.value === id) {
       resetForm()
     }
 
-    await loadPots()
+    await loadCameras()
   } catch (err) {
     error.value = TEXT.deleteError
-    console.error('Pot deleting failed:', err)
+    console.error('Camera deleting failed:', err)
   }
 }
 
-onMounted(loadPots)
+onMounted(loadCameras)
 </script>
 
 <template>
@@ -189,35 +193,40 @@ onMounted(loadPots)
     </section>
 
     <section class="workspace">
-      <form class="pot-form" @submit.prevent="savePot">
+      <form class="pot-form" @submit.prevent="saveCamera">
         <div class="form-header">
-          <h2>{{ editingId === null ? TEXT.add : TEXT.edit }}</h2>
+          <h2>{{ editingId === null ? TEXT.add : TEXT.update }}</h2>
           <button v-if="editingId !== null" type="button" class="button-muted" @click="resetForm">
             {{ TEXT.cancel }}
           </button>
         </div>
 
         <label>
-          <span>{{ TEXT.name }}</span>
-          <input v-model="form.name" type="text" name="name" required />
+          <span>{{ TEXT.brand }}</span>
+          <input v-model="form.brand" type="text" name="brand" required placeholder="Напр. Sony, Canon" />
         </label>
 
         <label>
-          <span>{{ TEXT.material }}</span>
-          <input v-model="form.material" type="text" name="material" required />
+          <span>{{ TEXT.model }}</span>
+          <input v-model="form.model" type="text" name="model" required placeholder="Напр. Alpha 7 IV" />
         </label>
 
         <div class="form-grid">
           <label>
-            <span>{{ TEXT.volume }}</span>
-            <input v-model="form.volume" type="number" name="volume" min="0" step="0.1" />
+            <span>{{ TEXT.megapixels }}</span>
+            <input v-model="form.megapixels" type="number" name="megapixels" min="0" placeholder="33" />
           </label>
 
           <label>
             <span>{{ TEXT.price }}</span>
-            <input v-model="form.price" type="number" name="price" min="0" step="0.01" />
+            <input v-model="form.price" type="number" name="price" min="0" step="0.01" placeholder="2499.99" />
           </label>
         </div>
+
+        <label>
+          <span>{{ TEXT.descriptionLabel }}</span>
+          <textarea v-model="form.description" name="description" rows="3" placeholder="Короткий опис камери..."></textarea>
+        </label>
 
         <p v-if="formError" class="inline-error">{{ formError }}</p>
 
@@ -231,10 +240,10 @@ onMounted(loadPots)
 
         <div v-else-if="error" class="message message-error">
           <p>{{ error }}</p>
-          <button type="button" @click="loadPots">{{ TEXT.retry }}</button>
+          <button type="button" @click="loadCameras">{{ TEXT.retry }}</button>
         </div>
 
-        <div v-else-if="pots.length === 0" class="message">
+        <div v-else-if="cameras.length === 0" class="message">
           <p>{{ TEXT.empty }}</p>
         </div>
 
@@ -243,26 +252,28 @@ onMounted(loadPots)
             <thead>
               <tr>
                 <th>ID</th>
-                <th>{{ TEXT.name }}</th>
-                <th>{{ TEXT.material }}</th>
-                <th>{{ TEXT.volume }}</th>
+                <th>{{ TEXT.brand }}</th>
+                <th>{{ TEXT.model }}</th>
+                <th>{{ TEXT.megapixels }}</th>
                 <th>{{ TEXT.price }}</th>
+                <th>{{ TEXT.descriptionLabel }}</th>
                 <th>{{ TEXT.actions }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="pot in pots" :key="pot.id">
-                <td class="muted">#{{ pot.id }}</td>
-                <td>{{ pot.name }}</td>
-                <td>{{ pot.material }}</td>
-                <td>{{ pot.volume }}</td>
-                <td>{{ pot.price }}</td>
+              <tr v-for="cam in cameras" :key="cam.id">
+                <td class="muted">#{{ cam.id }}</td>
+                <td><strong>{{ cam.brand }}</strong></td>
+                <td>{{ cam.model }}</td>
+                <td>{{ cam.megapixels }} MP</td>
+                <td class="price-cell">${{ cam.price }}</td>
+                <td class="desc-cell">{{ cam.description }}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="button-muted" @click="editPot(pot)">
+                    <button type="button" class="button-muted" @click="editCamera(cam)">
                       {{ TEXT.edit }}
                     </button>
-                    <button type="button" class="button-danger" @click="deletePot(pot)">
+                    <button type="button" class="button-danger" @click="deleteCamera(cam)">
                       {{ TEXT.delete }}
                     </button>
                   </div>
@@ -275,3 +286,16 @@ onMounted(loadPots)
     </section>
   </main>
 </template>
+
+<style scoped>
+.price-cell {
+  font-weight: 600;
+  color: #10b981;
+}
+.desc-cell {
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

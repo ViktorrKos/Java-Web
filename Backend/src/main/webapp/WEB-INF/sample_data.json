@@ -1,32 +1,26 @@
 [
   {
     "id": 1,
-    "name": "Stainless Steel Pot",
-    "material": "Stainless steel",
-    "volumeLiters": 5.0,
-    "diameterCm": 24.0,
-    "inductionCompatible": true,
-    "price": 1899.0,
-    "description": "Universal pot with a glass lid for daily cooking."
+    "brand": "Sony",
+    "model": "Alpha 7 IV",
+    "megapixels": 33,
+    "price": 2499.99,
+    "description": "Full-frame mirrorless camera for photo and video shooting."
   },
   {
     "id": 2,
-    "name": "Enameled Soup Pot",
-    "material": "Enameled steel",
-    "volumeLiters": 3.5,
-    "diameterCm": 20.0,
-    "inductionCompatible": false,
-    "price": 1299.0,
-    "description": "Lightweight pot for soups, sauces, and side dishes."
+    "brand": "Canon",
+    "model": "EOS R5",
+    "megapixels": 45,
+    "price": 3899.00,
+    "description": "Professional mirrorless camera with high-resolution photo mode."
   },
   {
     "id": 3,
-    "name": "Cast Iron Casserole",
-    "material": "Cast iron",
-    "volumeLiters": 4.2,
-    "diameterCm": 22.0,
-    "inductionCompatible": true,
-    "price": 2499.0,
-    "description": "Heavy casserole pot for slow cooking and baking."
+    "brand": "Nikon",
+    "model": "Z9",
+    "megapixels": 45,
+    "price": 5496.95,
+    "description": "Flagship mirrorless camera for sports and studio work."
   }
 ]

@@ -118,33 +118,27 @@ public class SampleService {
         List<Sample> samples = new ArrayList<>();
         samples.add(new Sample(
                 1,
-                "Stainless Steel Pot",
-                "Stainless steel",
-                5.0,
-                24.0,
-                true,
-                1899.0,
-                "Universal pot with a glass lid for daily cooking."
+                "Sony",
+                "Alpha 7 IV",
+                33,
+                2499.99,
+                "Full-frame mirrorless camera for photo and video shooting."
         ));
         samples.add(new Sample(
                 2,
-                "Enameled Soup Pot",
-                "Enameled steel",
-                3.5,
-                20.0,
-                false,
-                1299.0,
-                "Lightweight pot for soups, sauces, and side dishes."
+                "Canon",
+                "EOS R5",
+                45,
+                3899.00,
+                "Professional mirrorless camera with high-resolution photo mode."
         ));
         samples.add(new Sample(
                 3,
-                "Cast Iron Casserole",
-                "Cast iron",
-                4.2,
-                22.0,
-                true,
-                2499.0,
-                "Heavy casserole pot for slow cooking and baking."
+                "Nikon",
+                "Z9",
+                45,
+                5496.95,
+                "Flagship mirrorless camera for sports and studio work."
         ));
         return samples;
     }
