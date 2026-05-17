@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/pot': {
-        target: 'http://localhost:8080/WebLab-1.0-SNAPSHOT',
+        target: 'http://localhost:9090/WebLab-1.0-SNAPSHOT',
         changeOrigin: true,
         secure: false
       }
